@@ -1,23 +1,30 @@
-##  Named of the workflow.
-name: Python version
-## Set the trigger policy.
-## In this case, the workflow is execute on a `push` event,
-## or when a new commit is pushed to the repository
-on: [push]
-## List the steps to be executed by the workflow
+## Name of the workflow
+name: Python Version Check
+
+## Set the trigger policy
+## This workflow will execute on a `push` event
+on:
+  push:
+
+## List the jobs to be executed
 jobs:
   ## Set the name of the job
   check-python-version:
-    ## Configure the operating system the workflow should run on.
-    ## In this case, the job on Ubuntu
+    ## Configure the operating system the workflow should run on
     runs-on: ubuntu-latest
-    ## Define a sequence of steps to be executed 
+
+    ## Define a sequence of steps to be executed
     steps:
-      ## Use the public `checkout` actoin  in version v2  
-      ## to checkout the existing code in the repository
-      - uses: actions/checkout@v2
-      ## Use the public `setup-python` action  in version v2  
-      ## to install python on the Ubuntu based environment 
-      - uses: actions/setup-python@v2
-      ## Executes the `python --version` command
-      - run: python --version
+      ## Step 1: Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      ## Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      ## Step 3: Display the Python version
+      - name: Verify Python version
+        run: python --version
