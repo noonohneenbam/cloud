@@ -1,11 +1,104 @@
-## Docker commands used to build the application 
-# TODO: insert the docker build command
 
-## Docker commands used to run the application
-# TODO: insert the docker run command
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+hkim (main *) nd064_course_1
+$ cd project
+hkim (main *) project
+$ docker build -t techtrends .
 
-## Docker commands used to get the application logs
-# TODO: insert the docker logs command
+[+] Building 20.9s (12/12) FINISHED                                                                 docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                0.0s
+ => => transferring dockerfile: 626B                                                                                0.0s
+ => [internal] load metadata for docker.io/library/python:3.8-slim                                                  0.4s
+ => [internal] load .dockerignore                                                                                   0.0s
+ => => transferring context: 2B                                                                                     0.0s
+ => [1/7] FROM docker.io/library/python:3.8-slim@sha256:1d52838af602b4b5a831beb13a0e4d073280665ea7be7f69ce2382f29c  3.8s
+ => => resolve docker.io/library/python:3.8-slim@sha256:1d52838af602b4b5a831beb13a0e4d073280665ea7be7f69ce2382f29c  0.0s
+ => => sha256:302e3ee498053a7b5332ac79e8efebec16e900289fc1ecd1c754ce8fa047fcab 29.13MB / 29.13MB                    1.9s
+ => => extracting sha256:302e3ee498053a7b5332ac79e8efebec16e900289fc1ecd1c754ce8fa047fcab                           1.0s
+ => => extracting sha256:030d7bdc20a63e3d22192b292d006a69fa3333949f536d62865d1bd0506685cc                           0.1s
+ => => extracting sha256:a3f1dfe736c5f959143f23d75ab522a60be2da902efac236f4fb2a153cc14a5d                           0.7s
+ => => extracting sha256:3971691a363796c39467aae4cdce6ef773273fe6bfc67154d01e1b589befb912                           0.0s
+ => [internal] load build context                                                                                   0.6s
+ => => transferring context: 25.50MB                                                                                0.6s
+ => [2/7] WORKDIR /app                                                                                              0.2s
+ => [3/7] COPY . /app                                                                                               0.4s
+ => [4/7] COPY ./techtrends ./                                                                                      0.4s
+ => [5/7] RUN apt-get update && apt-get install -y sqlite3 &&     pip install --no-cache-dir -r requirements.txt   11.4s
+ => [6/7] RUN pip install -r requirements.txt                                                                       1.0s
+ => [7/7] RUN python init_db.py                                                                                     0.2s
+ => exporting to image                                                                                              2.8s
+ => => exporting layers                                                                                             1.4s
+ => => exporting manifest sha256:2c00698d769332764eb7b2f8abc5785c07ee7aad4d979acd8e1921d5f78ebe3c                   0.0s
+ => => exporting config sha256:717cf283f4fe14ef0f84727028e2f7fbe55b40a41778849c8a623d665d29fad1                     0.0s
+ => => exporting attestation manifest sha256:5b4a80253d74cbc78045164215a4a24537fbeb38f3c380522495bc3af2de4df0       0.0s
+ => => exporting manifest list sha256:09d820187c6e35df0375d315d746c2c2e6ec95bbc8af63a46ea6056f7c07e454              0.0s
+ => => naming to docker.io/library/techtrends:latest                                                                0.0s
+ => => unpacking to docker.io/library/techtrends:latest                                                             1.3s
 
-## Logs from the container running the TechTrends application
-# TODO: paste logs from the Docker container 
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/wfathlfmbwj88ng9czjechukc
+hkim (main *) project
+$ 
+hkim (main *) project
+$ docker run -d -p 7111:3111 --name techtrends_container techtrends
+
+368d2d7e16f411a06ec3dcf216a2bfad928207c1635cf58319bb719b8edb8293
+hkim (main *) project
+$ 
+hkim (main *) project
+$ docker logs techtrends_container
+ * Serving Flask app 'app' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+2024-12-10 15:40:43,918 -  * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+2024-12-10 15:40:43,918 - WARNING -  * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+2024-12-10 15:40:43,918 -  * Running on http://172.17.0.2:3111/ (Press CTRL+C to quit)
+2024-12-10 15:40:43,918 - INFO -  * Running on http://172.17.0.2:3111/ (Press CTRL+C to quit)
+2024-12-10 15:40:51,377 - Main page accessed.
+2024-12-10 15:40:51,377 - INFO - Main page accessed.
+2024-12-10 15:40:51,406 - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET / HTTP/1.1" 200 -
+2024-12-10 15:40:51,406 - INFO - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET / HTTP/1.1" 200 -
+2024-12-10 15:40:51,452 - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET /static/css/main.css HTTP/1.1" 200 -
+2024-12-10 15:40:51,452 - INFO - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET /static/css/main.css HTTP/1.1" 200 -
+2024-12-10 15:40:51,505 - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET /favicon.ico HTTP/1.1" 404 -
+2024-12-10 15:40:51,505 - INFO - 172.17.0.1 - - [10/Dec/2024 15:40:51] "GET /favicon.ico HTTP/1.1" 404 -
+2024-12-10 15:41:10,416 - Article "2020 CNCF Annual Report" retrieved.
+2024-12-10 15:41:10,416 - INFO - Article "2020 CNCF Annual Report" retrieved.
+2024-12-10 15:41:10,422 - 172.17.0.1 - - [10/Dec/2024 15:41:10] "GET /1 HTTP/1.1" 200 -
+2024-12-10 15:41:10,422 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:10] "GET /1 HTTP/1.1" 200 -
+2024-12-10 15:41:10,437 - 172.17.0.1 - - [10/Dec/2024 15:41:10] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:10,437 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:10] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:16,509 - The About page was accessed.
+2024-12-10 15:41:16,509 - INFO - The About page was accessed.
+2024-12-10 15:41:16,513 - 172.17.0.1 - - [10/Dec/2024 15:41:16] "GET /about HTTP/1.1" 200 -
+2024-12-10 15:41:16,513 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:16] "GET /about HTTP/1.1" 200 -
+2024-12-10 15:41:16,528 - 172.17.0.1 - - [10/Dec/2024 15:41:16] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:16,528 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:16] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:17,871 - 172.17.0.1 - - [10/Dec/2024 15:41:17] "GET /create HTTP/1.1" 200 -
+2024-12-10 15:41:17,871 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:17] "GET /create HTTP/1.1" 200 -
+2024-12-10 15:41:17,888 - 172.17.0.1 - - [10/Dec/2024 15:41:17] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:17,888 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:17] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:20,778 - New article "test" created.
+2024-12-10 15:41:20,778 - INFO - New article "test" created.
+2024-12-10 15:41:20,779 - 172.17.0.1 - - [10/Dec/2024 15:41:20] "POST /create HTTP/1.1" 302 -
+2024-12-10 15:41:20,779 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:20] "POST /create HTTP/1.1" 302 -
+2024-12-10 15:41:20,784 - Main page accessed.
+2024-12-10 15:41:20,784 - INFO - Main page accessed.
+2024-12-10 15:41:20,785 - 172.17.0.1 - - [10/Dec/2024 15:41:20] "GET / HTTP/1.1" 200 -
+2024-12-10 15:41:20,785 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:20] "GET / HTTP/1.1" 200 -
+2024-12-10 15:41:20,809 - 172.17.0.1 - - [10/Dec/2024 15:41:20] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:20,809 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:20] "GET /static/css/main.css HTTP/1.1" 304 -
+2024-12-10 15:41:42,751 - 172.17.0.1 - - [10/Dec/2024 15:41:42] "GET /metrics HTTP/1.1" 200 -
+2024-12-10 15:41:42,751 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:42] "GET /metrics HTTP/1.1" 200 -
+2024-12-10 15:41:45,334 - 172.17.0.1 - - [10/Dec/2024 15:41:45] "GET /status HTTP/1.1" 200 -
+2024-12-10 15:41:45,334 - INFO - 172.17.0.1 - - [10/Dec/2024 15:41:45] "GET /status HTTP/1.1" 200 -
+
+hkim (main *) project
+$ 
+hkim (main *) project
+$ 
