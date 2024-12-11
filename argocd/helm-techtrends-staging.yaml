@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/noonohneenbam/cloud'
+    repoURL: 'https://github.com/noonohneenbam/cloud.git'
     targetRevision: HEAD
-    path: helm/techtrends
+    path: project/helm/techtrends 
     helm:
       valueFiles:
         - values-staging.yaml
