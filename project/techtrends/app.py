@@ -1,112 +1,121 @@
 import sqlite3
-import logging
-from datetime import datetime
-from flask import Flask, flash, render_template, request, url_for, redirect
 import os
+from werkzeug.exceptions import abort
+from datetime import datetime
+import logging
+from flask import Flask, render_template, request, url_for, redirect, flash
 
-# Global variable to track database connection count
-connection_count = 0
-
+app = Flask(__name__)
+app.config['connection_count'] = 0
 def get_db_connection():
-    """Establishes a connection to the database."""
-    global connection_count
-    connection = sqlite3.connect('database.db')
+    try:
+        if os.path.exists("database.db"):
+            connection = sqlite3.connect("database.db")
+        else:
+            raise RuntimeError('Failed to open DB')
+    except sqlite3.OperationalError:
+        logging.error('Database.db is not properly defined.  run init_db.py!')
+
     connection.row_factory = sqlite3.Row
-    connection_count += 1
+    app.config['connection_count'] = app.config['connection_count'] + 1
     return connection
 
+
 def get_post(post_id):
-    """Retrieves a post by its ID from the database."""
     connection = get_db_connection()
-    post = connection.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    post = connection.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
     connection.close()
     return post
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your secret key'
 
-@app.route('/')
+
+
+# Define the main route of the web application
+@app.route("/")
 def index():
-    """Displays all posts."""
     connection = get_db_connection()
-    posts = connection.execute('SELECT * FROM posts').fetchall()
+    posts = connection.execute("SELECT * FROM posts").fetchall()
     connection.close()
-    return render_template('index.html', posts=posts)
+    return render_template("index.html", posts=posts)
 
-@app.route('/about')
-def about():
-    """Displays the About page."""
-    log_message('About page accessed')
-    return render_template('about.html')
 
-@app.route('/<int:post_id>')
+# Define how each individual article is rendered
+# If the post ID is not found a 404 page is shown
+@app.route("/<int:post_id>")
 def post(post_id):
-    """Displays a specific post."""
     post = get_post(post_id)
     if post is None:
-        log_message(f'Post with ID "{post_id}" does not exist')
-        return render_template('404.html'), 404
+        logging.error('Article with id %s do not exist!',post_id)
+        return render_template("404.html"), 404
     else:
-        log_message(f'Post "{post["title"]}" retrieved')
-        return render_template('post.html', post=post)
+        logging.debug('Article %s retrieved!',post["title"])
+        return render_template("post.html", post=post)
 
-@app.route('/create', methods=('GET', 'POST'))
+
+# Define the About Us page
+@app.route("/about")
+def about():
+    logging.debug("About page rendered!")
+    return render_template("about.html")
+
+
+# Define the post creation functionality
+@app.route("/create", methods=("GET", "POST"))
 def create():
-    """Handles the creation of new posts."""
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
+    if request.method == "POST":
+        title = request.form["title"]
+        content = request.form["content"]
 
         if not title:
-            flash('Title is required!')
+            flash("Title is required!")
         else:
             connection = get_db_connection()
-            connection.execute('INSERT INTO posts (title, content) VALUES (?, ?)', (title, content))
+            connection.execute(
+                "INSERT INTO posts (title, content) VALUES (?, ?)", (title, content)
+            )
             connection.commit()
             connection.close()
-            log_message(f'Post "{title}" created')
-            return redirect(url_for('index'))
-    return render_template('create.html')
+            logging.debug('Article %s created!',title)
+            return redirect(url_for("index"))
+    return render_template("create.html")
 
-@app.route('/metrics')
-def metrics():
-    """Returns application metrics such as database connection count and post count."""
-    connection = get_db_connection()
-    posts = connection.execute('SELECT * FROM posts').fetchall()
-    connection.close()
-    post_count = len(posts)
-    return {"db_connection_count": connection_count, "post_count": post_count}
 
-@app.route('/healthz')
+# Define healthz endpoint
+@app.route("/healthz")
 def healthz():
-    """Liveness endpoint to verify application is running."""
-    return {"result": "OK - application is running"}, 200
-
-@app.route('/readiness')
-def readiness():
-    """Readiness endpoint to verify database connectivity."""
     try:
         connection = get_db_connection()
-        connection.execute('SELECT 1')  # Simple query to verify database connection
+        connection.cursor()
+        connection.execute("SELECT * FROM posts")
         connection.close()
-        return {"result": "OK - ready"}, 200
-    except Exception as e:
-        log_message(f'Readiness check failed: {str(e)}')
-        return {"result": "ERROR - database not ready"}, 500
+        return {"result": "OK - healthy"}
+    except Exception:
+        return {"result": "ERROR - unhealthy"}, 500
 
-def log_message(msg):
-    """Logs a message with a timestamp."""
-    app.logger.info(f'{datetime.now().strftime("%m/%d/%Y, %H:%M:%S")} | {msg}')
 
-def init_db():
-    """Initializes the database if it doesn't already exist."""
-    if not os.path.exists('database.db'):
-        connection = sqlite3.connect('database.db')
-        with open('schema.sql') as f:
-            connection.executescript(f.read())
-        connection.close()
+# Define metrics endpoint
+@app.route("/metrics")
+def metrics():
+    connection = get_db_connection()
+    posts = connection.execute("SELECT * FROM posts").fetchall()
+    connection.close()
+    post_count = len(posts)
+    data = {"db_connection_count": app.config['connection_count'], "post_count": post_count}
+    return data
+
+def initialize_logger():
+    log_level = os.getenv("LOGLEVEL", "DEBUG").upper()
+    log_level = (
+        getattr(logging, log_level)
+        if log_level in ["CRITICAL", "DEBUG", "ERROR", "INFO", "WARNING",]
+        else logging.DEBUG
+    )
+
+    logging.basicConfig(
+        format='%(levelname)s:%(name)s:%(asctime)s, %(message)s',
+                level=log_level,
+    )
 
 if __name__ == "__main__":
-    init_db()
-    logging.basicConfig(level=logging.DEBUG)
-    app.run(host='0.0.0.0', port=3111)
+    initialize_logger()
+    app.run(host="0.0.0.0", port="3111")
