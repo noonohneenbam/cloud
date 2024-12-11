@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/noonohneenbam/cloud.git'
     targetRevision: HEAD
-    path: helm/techtrends 
+    path: project/helm/techtrends 
     helm:
       valueFiles:
         - values-prod.yaml
