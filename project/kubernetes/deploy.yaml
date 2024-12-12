@@ -22,9 +22,8 @@ spec:
         app: techtrends
     spec:
       containers:
-        - image: hankim2024/techtrends:latest
-          imagePullPolicy: IfNotPresent
-          name: techtrends
+        - name: techtrends
+          image: hankim2024/techtrends:latest
           ports:
             - containerPort: 3111
               protocol: TCP

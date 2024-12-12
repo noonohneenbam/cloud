@@ -1,12 +1,42 @@
+
 import sqlite3
 import os
 from werkzeug.exceptions import abort
 from datetime import datetime
 import logging
+import sys
 from flask import Flask, render_template, request, url_for, redirect, flash
 
 app = Flask(__name__)
 app.config['connection_count'] = 0
+
+# Initialize logger to write to STDOUT and STDERR
+def initialize_logger():
+    log_level = os.getenv("LOGLEVEL", "DEBUG").upper()
+    log_level = (
+        getattr(logging, log_level)
+        if log_level in ["CRITICAL", "DEBUG", "ERROR", "INFO", "WARNING"]
+        else logging.DEBUG
+    )
+
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+    formatter = logging.Formatter('%(levelname)s:%(name)s:%(asctime)s, %(message)s')
+    
+    # Log to STDOUT
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(log_level)
+    stdout_handler.setFormatter(formatter)
+    logger.addHandler(stdout_handler)
+    
+    # Log to STDERR
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    stderr_handler.setLevel(logging.ERROR)  # Only errors to STDERR
+    stderr_handler.setFormatter(formatter)
+    logger.addHandler(stderr_handler)
+
+initialize_logger()
+
 def get_db_connection():
     try:
         if os.path.exists("database.db"):
@@ -14,7 +44,7 @@ def get_db_connection():
         else:
             raise RuntimeError('Failed to open DB')
     except sqlite3.OperationalError:
-        logging.error('Database.db is not properly defined.  run init_db.py!')
+        logging.error('Database.db is not properly defined. Run init_db.py!')
 
     connection.row_factory = sqlite3.Row
     app.config['connection_count'] = app.config['connection_count'] + 1
@@ -26,8 +56,6 @@ def get_post(post_id):
     post = connection.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
     connection.close()
     return post
-
-
 
 
 # Define the main route of the web application
@@ -45,17 +73,17 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        logging.error('Article with id %s do not exist!',post_id)
+        logging.error('404 Error: Article with id %s does not exist!', post_id)
         return render_template("404.html"), 404
     else:
-        logging.debug('Article %s retrieved!',post["title"])
+        logging.debug('Article "%s" accessed.', post["title"])
         return render_template("post.html", post=post)
 
 
 # Define the About Us page
 @app.route("/about")
 def about():
-    logging.debug("About page rendered!")
+    logging.debug("About Us page accessed.")
     return render_template("about.html")
 
 
@@ -75,7 +103,7 @@ def create():
             )
             connection.commit()
             connection.close()
-            logging.debug('Article %s created!',title)
+            logging.debug('New article "%s" created.', title)
             return redirect(url_for("index"))
     return render_template("create.html")
 
@@ -103,19 +131,6 @@ def metrics():
     data = {"db_connection_count": app.config['connection_count'], "post_count": post_count}
     return data
 
-def initialize_logger():
-    log_level = os.getenv("LOGLEVEL", "DEBUG").upper()
-    log_level = (
-        getattr(logging, log_level)
-        if log_level in ["CRITICAL", "DEBUG", "ERROR", "INFO", "WARNING",]
-        else logging.DEBUG
-    )
-
-    logging.basicConfig(
-        format='%(levelname)s:%(name)s:%(asctime)s, %(message)s',
-                level=log_level,
-    )
 
 if __name__ == "__main__":
-    initialize_logger()
     app.run(host="0.0.0.0", port="3111")

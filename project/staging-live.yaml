@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"techtrends-staging"},"name":"techtrends","namespace":"staging"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"techtrends"}},"template":{"metadata":{"labels":{"app":"techtrends"}},"spec":{"containers":[{"image":"techtrends:latest","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/healthz","port":3111},"initialDelaySeconds":5,"periodSeconds":10},"name":"techtrends","ports":[{"containerPort":3111}],"readinessProbe":{"httpGet":{"path":"/healthz","port":3111},"initialDelaySeconds":5,"periodSeconds":10},"resources":{"limits":{"cpu":"500m","memory":"128Mi"},"requests":{"cpu":"300m","memory":"90Mi"}}}]}}}}
+  creationTimestamp: "2024-12-11T20:29:32Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/instance: techtrends-staging
+  name: techtrends
+  namespace: staging
+  resourceVersion: "52632"
+  uid: aca49aa6-0c01-4dfc-8037-91aa5dac43c5
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: techtrends
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: techtrends
+    spec:
+      containers:
+      - image: techtrends:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 3111
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: techtrends
+        ports:
+        - containerPort: 3111
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 3111
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 300m
+            memory: 90Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  conditions:
+  - lastTransitionTime: "2024-12-11T20:29:32Z"
+    lastUpdateTime: "2024-12-11T20:29:32Z"
+    message: Deployment does not have minimum availability.
+    reason: MinimumReplicasUnavailable
+    status: "False"
+    type: Available
+  - lastTransitionTime: "2024-12-11T20:39:32Z"
+    lastUpdateTime: "2024-12-11T20:39:32Z"
+    message: ReplicaSet "techtrends-84f98ff986" has timed out progressing.
+    reason: ProgressDeadlineExceeded
+    status: "False"
+    type: Progressing
+  observedGeneration: 1
+  replicas: 3
+  unavailableReplicas: 3
+  updatedReplicas: 3
