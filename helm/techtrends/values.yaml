@@ -7,7 +7,7 @@ service:
   type: ClusterIP
 
 image:
-  repository: techtrends
+  repository: hankim2024/techtrends
   tag: latest
   pullPolicy: IfNotPresent
 
