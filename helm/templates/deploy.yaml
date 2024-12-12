@@ -24,7 +24,7 @@ spec:
         tag: latest
     spec:
       containers:
-      - image: hankim2024/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+      - image: mikeattara/{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: techtrends
         ports:
