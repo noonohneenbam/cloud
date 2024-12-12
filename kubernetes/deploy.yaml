@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-  labels:
-    app: techtrends
   name: techtrends
   namespace: prod
 spec:
@@ -11,20 +8,14 @@ spec:
   selector:
     matchLabels:
       app: techtrends
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
         app: techtrends
     spec:
       containers:
-        - image: hankim2024/techtrends:latest
-          imagePullPolicy: IfNotPresent
-          name: techtrends
+        - name: techtrends
+          image: hankim2024/techtrends:latest
           ports:
             - containerPort: 3111
               protocol: TCP
@@ -43,4 +34,3 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "500m"
-
