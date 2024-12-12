@@ -4,10 +4,10 @@ metadata:
   name: techtrends
   namespace: prod  # Update to prod or staging
 spec:
+  ports:
+    - port: 4111
+      protocol: TCP
+      targetPort: 3111
   selector:
     app: techtrends
-  ports:
-  - protocol: TCP
-    port: 3111  # Match the prod port
-    targetPort: 3111
   type: ClusterIP

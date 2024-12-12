@@ -13,9 +13,3 @@ resources:
     memory: "256Mi"
     cpu: "500m"
     
-livenessProbe:
-  path: /healthz
-  port: 7111  # For prod
-readinessProbe:
-  path: /healthz
-  port: 7111  # For prod

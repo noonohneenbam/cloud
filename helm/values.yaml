@@ -1,7 +1,7 @@
 namespace: sandbox
 
 service:
-  port: 3111
+  port: 4111
   targetPort: 3111
   protocol: TCP
   type: ClusterIP
@@ -25,8 +25,7 @@ containerPort: 3111
 
 livenessProbe:
   path: /healthz
-  port: 3111
+
 
 readinessProbe:
   path: /healthz
-  port: 3111
