@@ -14,9 +14,9 @@ resources:
     cpu: "500m"
 
 livenessProbe:
-  path: /
+  path: /healthz
+  port: 5111
+readinessProbe:
+  path: /healthz
   port: 5111
 
-readinessProbe:
-  path: /
-  port: 5111

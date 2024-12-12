@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: techtrends
-  namespace: sandbox
+  namespace: prod  # Update to prod or staging
 spec:
   selector:
     app: techtrends
   ports:
   - protocol: TCP
-    port: 4111
+    port: 7111  # Match the prod port
     targetPort: 3111
   type: ClusterIP
