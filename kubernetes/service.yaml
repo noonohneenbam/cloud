@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: techtrends
+  namespace: prod  # Update to prod or staging
+spec:
+  ports:
+    - port: 4111
+      protocol: TCP
+      targetPort: 3111
+  selector:
+    app: techtrends
+  type: ClusterIP
