@@ -8,6 +8,6 @@ spec:
     app: techtrends
   ports:
   - protocol: TCP
-    port: 7111  # Match the prod port
+    port: 3111  # Match the prod port
     targetPort: 3111
   type: ClusterIP

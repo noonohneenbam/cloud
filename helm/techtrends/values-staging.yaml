@@ -1,7 +1,7 @@
 namespace: staging
 
 service:
-  port: 5111
+  port: 3111
 
 replicaCount: 3
 
@@ -15,8 +15,8 @@ resources:
 
 livenessProbe:
   path: /healthz
-  port: 5111
+  port: 3111
 readinessProbe:
   path: /healthz
-  port: 5111
+  port: 3111
 
